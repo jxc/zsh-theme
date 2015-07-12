@@ -47,8 +47,11 @@ function svn_prompt_info {
     fi
 }
 
+
+
 local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ %s)"
-PROMPT=$'%{$fg_bold[green]%}%*  %{$fg[cyan]%}${PWD/#$HOME/~}%b  %{$fg_bold[blue]%}$(git_prompt_info)$(svn_prompt_info)%{$fg_bold[blue]%}%{$reset_color%}\n%{$fg[black]%}: %{$fg[magenta]%}%n%{$reset_color%}%{$fg[cyan]%}@%{$reset_color%}%{$fg[yellow]%}%m %{$reset_color%}%{$fg[cyan]%}$%{$fg[black]%}; %{$reset_color%}'
+PROMPT=$'%{$fg[cyan]%}${PWD/#$HOME/~}%b %{$fg_bold[blue]%}$(git_prompt_info)$(svn_prompt_info)%{$fg_bold[blue]%}%{$reset_color%} %{$fg[magenta]%}%n%{$reset_color%}%{$fg[cyan]%}@%{$reset_color%}%{$fg[yellow]%}%m\n %{$reset_color%}%{$fg[cyan]%}$%{$fg[black]%}; %{$reset_color%}'
+RPROMPT=''
 
 ZSH_THEME_VCS_PROMPT_PREFIX=":(%{$fg[red]%}"
 ZSH_THEME_VCS_PROMPT_SUFFIX="%{$reset_color%}"
