@@ -79,7 +79,7 @@ function username_and_host {
 function prompt_character {
   local prompt=""
   [[ $UID -eq 0 ]] && prompt+="%{%F{yellow}%}$LIGHTNING"
-  prompt+="%{$reset_color%}%{$fg[cyan]%}$%{$reset_color%} "
+  prompt+="%{$reset_color%}$ "
   echo $prompt
 }
 
