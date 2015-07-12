@@ -47,11 +47,49 @@ function svn_prompt_info {
     fi
 }
 
+# Characters
+CROSS="\u2718"
+LIGHTNING="\u26a1"
+GEAR="\u2699"
+DISAPPOINTED="ಠ_ಠ"
 
+# Convenience methods
+# some inspired from https://gist.github.com/agnoster/3712874
+function location {
+  echo "%{$fg[cyan]%}${PWD/#$HOME/~} "
+}
 
-local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ %s)"
-PROMPT=$'%{$fg[cyan]%}${PWD/#$HOME/~}%b %{$fg_bold[blue]%}$(git_prompt_info)$(svn_prompt_info)%{$fg_bold[blue]%}%{$reset_color%} %{$fg[magenta]%}%n%{$reset_color%}%{$fg[cyan]%}@%{$reset_color%}%{$fg[yellow]%}%m\n %{$reset_color%}%{$fg[cyan]%}$%{$fg[black]%}; %{$reset_color%}'
-RPROMPT=''
+function vcs_prompt {
+  local git_or_svn_prompt_info="$(git_prompt_info)$(svn_prompt_info)"
+
+  # make sure it is not empty
+  if [ -n "$git_or_svn_prompt_info" ]; then
+    echo "%{$fg_bold[blue]%}$git_or_svn_prompt_info%{$fg_bold[blue]%}%{$reset_color%} "
+  fi
+}
+
+function username_and_host {
+  local user=`whoami`
+ 
+  if [[ "$user" != "$DEFAULT_USER" || -n "$SSH_CONNECTION" ]]; then
+    echo "%{$fg[magenta]%}%n%{$reset_color%}%{$fg[cyan]%}@%{$reset_color%}%{$fg[yellow]%}%m "
+  fi
+}
+
+function prompt_character {
+  local prompt=""
+  [[ $UID -eq 0 ]] && prompt+="%{%F{yellow}%}$LIGHTNING"
+  prompt+="%{$reset_color%}%{$fg[cyan]%}$%{$reset_color%} "
+  echo $prompt
+}
+
+function last_command_status {
+  [[ $? -ne 0 ]] && echo "%{$fg[red]%}$DISAPPOINTED%{$reset_color%}"
+}
+
+function jobs_running {
+  [[ $(jobs -l | wc -l) -gt 0 ]] && echo "%{$fg_bold[cyan]%}$GEAR%{$reset_color%}"
+}
 
 ZSH_THEME_VCS_PROMPT_PREFIX=":(%{$fg[red]%}"
 ZSH_THEME_VCS_PROMPT_SUFFIX="%{$reset_color%}"
@@ -68,8 +106,6 @@ ZSH_THEME_SVN_PROMPT_SUFFIX="$ZSH_THEME_VCS_PROMPT_SUFFIX"
 ZSH_THEME_SVN_PROMPT_DIRTY="$ZSH_THEME_VCS_PROMPT_DIRTY"
 ZSH_THEME_SVN_PROMPT_CLEAN="$ZSH_THEME_VCS_PROMPT_CLEAN"
 
-# Update current prompt every second (to refresh the current time)
-TMOUT=1
-TRAPALRM() {
-    zle reset-prompt
-}
+local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ %s)"
+PROMPT=$'$(location)$(vcs_prompt)$(username_and_host)\n$(prompt_character)'
+RPROMPT='$(last_command_status) $(jobs_running)'
